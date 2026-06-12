@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Docs</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-color: #1a73e8;
+            --border-color: #dadce0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            overflow: hidden;
+            color: #202124;
+        }
+
+        /* Fake Google Docs Header */
+        .header {
+            height: 64px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+            background: url('https://www.gstatic.com/images/branding/product/1x/docs_48dp.png') center/cover no-repeat;
+        }
+
+        .doc-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .doc-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 18px;
+            color: #202124;
+            margin-bottom: 2px;
+        }
+
+        .doc-menus {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #3c4043;
+        }
+
+        /* Fake Toolbar */
+        .toolbar {
+            height: 36px;
+            background: #edf2fa;
+            border-radius: 18px;
+            margin: 8px 16px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .toolbar-icon {
+            width: 20px;
+            height: 20px;
+            background-color: #444746;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>') center/cover no-repeat;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>') center/cover no-repeat;
+            margin-right: 16px;
+        }
+
+        /* Fake Page */
+        .page {
+            width: 816px;
+            height: 1056px;
+            background: #fff;
+            margin: 16px auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Modal Overlay */
+        .overlay {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Error Dialog */
+        .dialog {
+            background: white;
+            width: 512px;
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            box-sizing: border-box;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+            margin: 0 0 16px 0;
+        }
+
+        #description {
+            margin: 0 0 16px 0;
+            color: #3c4043;
+            font-size: 14px;
+        }
+
+        ol {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-top: 16px;
+        }
+
+        li h4 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 14px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        li:nth-child(1) h4:before {
+            content: "Step 1";
+        }
+
+        li:nth-child(2) h4:before {
+            content: "Step 2";
+        }
+
+        li:nth-child(3) h4:before {
+            content: "Step 3";
+        }
+
+        li p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+
+        #chrome-url-box {
+            border: 1px solid #c7c7c7;
+            box-sizing: border-box;
+            border-radius: 4px;
+            padding: 6px 8px 6px 12px;
+            height: 36px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f1f3f4;
+        }
+
+        #chrome-url-box code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            color: #202124;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: all;
+            flex-grow: 1;
+        }
+
+        #chrome-settings-url-copy {
+            color: var(--brand-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            padding: 4px;
+            background: none;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        #chrome-settings-url-copy:hover {
+            background-color: rgba(26, 115, 232, 0.08);
+        }
+
+        #chrome-settings-url-copy svg {
+            fill: currentColor;
+            width: 20px;
+            height: 20px;
+        }
+
+        #buttons-row {
+            text-align: right;
+            margin-top: 24px;
+        }
+
+        .text-button {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            height: 36px;
+            padding: 0 24px;
+            cursor: pointer;
+            margin-left: 16px;
+            transition: all 0.2s;
+        }
+
+        .text-button.brand-color {
+            background-color: var(--brand-color);
+            color: #fff;
+        }
+
+        .text-button.brand-color:hover {
+            background-color: #174ea6;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        }
+
+        .text-button:not(.brand-color) {
+            color: var(--brand-color);
+            background-color: transparent;
+        }
+
+        .text-button:not(.brand-color):hover {
+            background-color: rgba(26, 115, 232, 0.04);
+        }
+
+        .text-button:disabled {
+            background-color: transparent;
+            color: #3c4043;
+            opacity: 0.38;
+            cursor: default;
+        }
+
+        .toast {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            background-color: #323232;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fake Background UI -->
+    <div class="header">
+        <div class="logo"></div>
+        <div class="doc-info">
+            <div class="doc-title">Important Internal Memo</div>
+            <div class="doc-menus">
+                <span>File</span>
+                <span>Edit</span>
+                <span>View</span>
+                <span>Insert</span>
+                <span>Format</span>
+                <span>Tools</span>
+                <span>Extensions</span>
+                <span>Help</span>
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <div class="toolbar-icon"></div>
+    </div>
+    <div class="page"></div>
+
+    <!-- Error Modal (ClickFix Payload) -->
+    <div class="overlay" id="overlay">
+        <div class="dialog" id="dialog" role="dialog" aria-labelledby="heading" aria-describedby="description">
+            <h3 id="heading">Loading issue</h3>
+            <p id="description">Troubleshoot this issue by clearing application resources</p>
+            <ol>
+                <li>
+                    <h4></h4>
+                    <p>Press <strong><svg viewBox="0 0 24 24" width="14" height="14"
+                                style="vertical-align: middle; margin-right: 4px; margin-bottom: 2px;"
+                                fill="currentColor">
+                                <path
+                                    d="M2.5 2.5h8.5v8.5h-8.5zm9.5 0h8.5v8.5h-8.5zm-9.5 9.5h8.5v8.5h-8.5zm9.5 0h8.5v8.5h-8.5z" />
+                            </svg>+ R</strong> and
+                        press <strong>Enter</strong></p>
+                </li>
+                <li>
+                    <h4></h4>
+                    <p>Copy the diagnostic script below and paste it into the console:</p>
+                    <div id="chrome-url-box">
+                        <code id="payload">cmd /k echo Hello World!</code>
+                        <button id="chrome-settings-url-copy" aria-label="Copy command" title="Copy to clipboard">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                        </button>
+                    </div>
+                </li>
+                <li>
+                    <h4></h4>
+                    <p>Once the script has completed successfully, click <strong>Reload now</strong> below to refresh
+                        the page.</p>
+                </li>
+            </ol>
+            <p id="buttons-row">
+                <button class="text-button" id="send-feedback" disabled>Send feedback</button>
+                <button class="text-button brand-color" id="reload-now">Reload now</button>
+            </p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Command copied to clipboard!</div>
+
+    <script>
+        // Copy functionality
+        const copyBtn = document.getElementById('chrome-settings-url-copy');
+        const payloadCode = document.getElementById('payload');
+        const toast = document.getElementById('toast');
+        let toastTimeout;
+
+        copyBtn.addEventListener('click', function () {
+            // Modern copy to clipboard
+            navigator.clipboard.writeText(payloadCode.innerText).then(() => {
+                showToast();
+            }).catch(err => {
+                // Fallback for older browsers
+                const range = document.createRange();
+                range.selectNode(payloadCode);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                showToast();
+            });
+        });
+
+        function showToast() {
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Reload functionality
+        document.getElementById('reload-now').addEventListener('click', function () {
+            window.location.reload();
+        });
+
+        // Prevent modal from closing if they click outside
+        document.getElementById('overlay').addEventListener('click', function (e) {
+            if (e.target === this) {
+                // Blink dialog to indicate it must be completed
+                const dialog = document.getElementById('dialog');
+                dialog.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    dialog.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    </script>
+</body>
+
+</html>
