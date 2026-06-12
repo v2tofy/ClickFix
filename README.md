@@ -38,21 +38,3 @@ Run the host script directly from the terminal:
 ```bash
 python host.py
 ```
-
-## How to Publish to GitHub
-
-If you want to store your testing framework on GitHub:
-1. Open your terminal in this directory.
-2. Initialize a new Git repository:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: ClickFix testing framework"
-   ```
-3. Create a new repository on GitHub.
-4. Add the remote and push:
-   ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   git branch -M main
-   git push -u origin main
-   ```
